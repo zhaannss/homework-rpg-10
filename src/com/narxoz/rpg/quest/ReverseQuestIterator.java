@@ -2,11 +2,8 @@ package com.narxoz.rpg.quest;
 
 import java.util.List;
 
-/**
- * Traverses quests from newest arrival back to oldest arrival.
- */
+/** Traverses quests from newest arrival back to oldest. */
 public class ReverseQuestIterator implements QuestIterator {
-
     private final List<Quest> snapshot;
     private int cursor;
 
@@ -15,15 +12,6 @@ public class ReverseQuestIterator implements QuestIterator {
         this.cursor = snapshot.size() - 1;
     }
 
-    @Override
-    public boolean hasNext() {
-        // TODO: return true while the cursor still points at an unread quest.
-        return false;
-    }
-
-    @Override
-    public Quest next() {
-        // TODO: return the current quest and move the cursor backward.
-        return null;
-    }
+    @Override public boolean hasNext() { return cursor >= 0; }
+    @Override public Quest next()      { return snapshot.get(cursor--); }
 }
