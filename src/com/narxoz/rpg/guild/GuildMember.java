@@ -14,13 +14,11 @@ public abstract class GuildMember {
         mediator.register(this);
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName()                 { return name; }
+    protected GuildMediator getMediator()   { return mediator; }
 
-    protected GuildMediator getMediator() {
-        return mediator;
-    }
+    /** Called by GuildHall.register() — member declares which topics it listens to. */
+    public abstract void subscribeToTopics(GuildHall hall);
 
     public abstract void receive(String topic, GuildMember from, String payload);
 }

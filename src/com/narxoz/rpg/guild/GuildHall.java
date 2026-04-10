@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Topic-based mediator for the Adventurers' Guild war council.
+ * Topic-based mediator. Routes messages to subscribers — never calls
+ * colleagues directly, never stores concrete colleague references.
  */
 public class GuildHall implements GuildMediator {
 
@@ -14,16 +15,22 @@ public class GuildHall implements GuildMediator {
 
     @Override
     public void register(GuildMember member) {
-        // TODO: add the member to the topic lists it should receive.
+        // Each member declares its own topics by calling subscribeToTopics()
+        member.subscribeToTopics(this);
     }
 
     @Override
     public void dispatch(String topic, GuildMember from, String payload) {
-        // TODO: notify registered members for the topic without direct colleague calls.
+        List<GuildMember> subscribers = subscribersFor(topic);
+        for (GuildMember member : subscribers) {
+            if (member != from) {          // sender does not receive its own message
+                member.receive(topic, from, payload);
+            }
+        }
     }
 
     protected void addSubscriber(String topic, GuildMember member) {
-        membersByTopic.computeIfAbsent(topic, key -> new ArrayList<>()).add(member);
+        membersByTopic.computeIfAbsent(topic, k -> new ArrayList<>()).add(member);
     }
 
     protected List<GuildMember> subscribersFor(String topic) {
