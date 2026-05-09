@@ -1,21 +1,31 @@
 package com.narxoz.rpg.guild;
 
-/**
- * Guild officer responsible for wounds, potions, and recovery plans.
- */
+/** Responsible for wounds, potions, and recovery plans. */
 public class Healer extends GuildMember {
 
-    public Healer(String name, GuildMediator mediator) {
-        super(name, mediator);
+    public Healer(String name, GuildMediator mediator) { super(name, mediator); }
+
+    @Override
+    public void subscribeToTopics(GuildHall hall) {
+        hall.addSubscriber("HEAL_REQUEST",  this);
+        hall.addSubscriber("MISSION_ORDER", this);
+        hall.addSubscriber("SUPPLY_REQUEST",this);
     }
 
-    public void prepareAid(String topic, String payload) {
-        // TODO: send a healing message through the mediator.
-        getMediator().dispatch(topic, this, payload);
+    public void prepareAid(String payload) {
+        System.out.println("[" + getName() + "] Preparing aid → " + payload);
+        getMediator().dispatch("HEAL_REQUEST", this, payload);
     }
 
     @Override
     public void receive(String topic, GuildMember from, String payload) {
-        // TODO: react to a guild-hall message without calling another colleague directly.
+        switch (topic) {
+            case "HEAL_REQUEST" ->
+                    System.out.println("  [" + getName() + "] <- HEAL_REQUEST from " + "Council" + ": preparing potions — " + payload);
+            case "MISSION_ORDER" ->
+                    System.out.println("  [" + getName() + "] <- MISSION_ORDER from " + "Council" + ": packing field kit for — " + payload);
+            case "SUPPLY_REQUEST" ->
+                    System.out.println("  [" + getName() + "] <- SUPPLY_REQUEST from " + "Council" + ": checking medical stock — " + payload);
+        }
     }
 }

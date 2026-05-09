@@ -1,21 +1,28 @@
 package com.narxoz.rpg.guild;
 
-/**
- * Guild officer responsible for route reports and reconnaissance.
- */
+/** Responsible for route reports and reconnaissance. */
 public class Scout extends GuildMember {
 
-    public Scout(String name, GuildMediator mediator) {
-        super(name, mediator);
+    public Scout(String name, GuildMediator mediator) { super(name, mediator); }
+
+    @Override
+    public void subscribeToTopics(GuildHall hall) {
+        hall.addSubscriber("SCOUT_REPORT",  this);
+        hall.addSubscriber("MISSION_ORDER", this);
     }
 
-    public void reportRoute(String topic, String payload) {
-        // TODO: send a scouting message through the mediator.
-        getMediator().dispatch(topic, this, payload);
+    public void reportRoute(String payload) {
+        System.out.println("[" + getName() + "] Reporting route → " + payload);
+        getMediator().dispatch("SCOUT_REPORT", this, payload);
     }
 
     @Override
     public void receive(String topic, GuildMember from, String payload) {
-        // TODO: react to a guild-hall message without calling another colleague directly.
+        switch (topic) {
+            case "SCOUT_REPORT" ->
+                    System.out.println("  [" + getName() + "] <- SCOUT_REPORT from " + "Council" + ": cross-checking map — " + payload);
+            case "MISSION_ORDER" ->
+                    System.out.println("  [" + getName() + "] <- MISSION_ORDER from " + "Council" + ": plotting route for — " + payload);
+        }
     }
 }
